@@ -1,6 +1,6 @@
-displayName: Request ID
+displayName: X-Request-ID
 type: middleware
-import: github.com/pipe01/plugin-requestid
-summary: Adds a X-Request-Id header to incoming requests
+import: github.com/gamblingpro/plugin-requestid
+summary: Adds a X-Request-Id header to incoming requests and responses
 
 testData: {}

@@ -2,35 +2,33 @@ package plugin_requestid
 
 import (
 	"context"
-	"crypto/rand"
-	"fmt"
-	"log"
+	"github.com/google/uuid"
 	"net/http"
 )
 
-const defaultHeader = "X-Request-Id"
+const defaultHeader = "X-Request-ID"
 
 type Config struct {
 	HeaderName string
+	Enabled    bool
 }
 
 func CreateConfig() *Config {
 	return &Config{
 		HeaderName: defaultHeader,
+		Enabled:    true,
 	}
 }
 
 func New(ctx context.Context, next http.Handler, config *Config, _ string) (http.Handler, error) {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		var b [16]byte
-		_, err := rand.Read(b[:])
-		if err != nil {
-			log.Fatal(err)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if config.Enabled && r.Header.Get(config.HeaderName) == "" {
+			id := uuid.New()
+			id.MarshalBinary()
+			r.Header.Add(config.HeaderName, id.String())
+			w.Header().Add(config.HeaderName, id.String())
 		}
-		id := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 
-		r.Header.Add(config.HeaderName, id)
-
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(w, r)
 	}), nil
 }
