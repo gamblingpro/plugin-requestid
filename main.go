@@ -9,8 +9,8 @@ import (
 const defaultHeader = "X-Request-ID"
 
 type Config struct {
-	HeaderName string
-	Enabled    bool
+	HeaderName string `json:"headerName,omitempty"`
+	Enabled    bool   `json:"enabled,omitempty"`
 }
 
 func CreateConfig() *Config {
